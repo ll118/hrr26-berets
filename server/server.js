@@ -82,3 +82,6 @@ app.get('/myLists', handler.retrieveShopping);
 app.post('/signup', handler.signUpUser);
 app.post('/login', handler.logInUser);
 app.get('/logout', handler.logOutUser);
+
+// sends user list
+app.post('/send-list', handler.sendList);

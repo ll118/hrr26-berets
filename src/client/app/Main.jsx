@@ -34,6 +34,7 @@ class Main extends Component {
     this.removeList = this.removeList.bind(this);
     this.handleRenameList = this.handleRenameList.bind(this);
     this.renameList = this.renameList.bind(this);
+    this.handleSend = this.handleSend.bind(this);
   }
 
   componentDidMount() {
@@ -41,7 +42,23 @@ class Main extends Component {
     if (this.props.loggedIn) {
       this.getmyList();
     }
-     this.getCatalog();
+    this.getCatalog();
+  }
+
+  handleSend() {
+    var url = 'localhost:3000/send-list';
+    request
+      .post(url)
+      .send({
+        list: this.state.myList,
+      })
+      .end((err, res) => {
+        if (err) {
+          console.log('error sending email', err);
+        } else {
+          console.log(res);
+        }
+      });
   }
 
   getCatalog() {
@@ -301,7 +318,9 @@ class Main extends Component {
             handleRenameList={this.handleRenameList}
             myList={this.state.myList}
             shoppingList={this.state.shoppingList}
-            currentList={this.state.currentList}/>
+            currentList={this.state.currentList}
+            sendList={this.handleSend}
+          />
         </div>
       );
     }

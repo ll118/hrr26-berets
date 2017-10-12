@@ -5,7 +5,6 @@ const rp = require('request-promise');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-
 const User = require('../db/models/user');
 const Product = require('../db/models/product');
 // Please sign up at https://developer.walmartlabs.com/ for API KEY.
@@ -43,7 +42,6 @@ exports.logInUser = (req, res) => {
     res.redirect('/');
   });
 };
-
 
 exports.logOutUser = (req, res) => {
   req.logout();
@@ -110,9 +108,6 @@ let lookUp = (itemId, cb) => {
     });
 };
 
-
-
-
 /// stores products in our cache database if product details wasn't find
 let storeproductsInCache = (itemId, res) => {
   setTimeout( () => {
@@ -127,7 +122,6 @@ let storeproductsInCache = (itemId, res) => {
     });
   }, 1000);
 };
-
 
 // checks if we stored item details for provided itemID
 exports.cachedProductDetails = (req, res) => {
@@ -211,12 +205,12 @@ exports.retrieveShopping = function(req, res) {
         res.send('User not found!');
       }
     });
-
   } else {
     res.status(400);
     res.send('Unauthorized access!');
   }
 };
+
 // saving existing shopping list after changes were made
 exports.saveExisting = (req, res) => {
   let list = req.body;
@@ -248,8 +242,10 @@ exports.saveExisting = (req, res) => {
     });
   }
 };
+
 //create a new shoppinglist if shopping list doesn't exist inside of User.shoppinglist object
 exports.createList = (req, res) => {
+  console.log(req.session);
   let username = req.session.passport.user;
   let newName = 'Untitled';
   User.findOne({username: username}).exec((err, user) => {
@@ -277,6 +273,7 @@ exports.createList = (req, res) => {
     }
   });
 };
+
 // remove shopping list from User database
 exports.removeList = (req, res) => {
   let username = req.session.passport.user;
@@ -292,7 +289,6 @@ exports.removeList = (req, res) => {
     }
   });
 };
-
 
 // rename the shoppingList function
 exports.renameList = (req, res) => {
@@ -325,6 +321,7 @@ exports.renameList = (req, res) => {
     }
   });
 };
+
 // saving shopping list inside of User database
 exports.saveShopping = function(req, res, next) {
   let test = {techShopping: [{'name': 'Apples iPod touch 16GB', 'price': 225, 'itemId': 42608132},
@@ -332,6 +329,7 @@ exports.saveShopping = function(req, res, next) {
     {'name': 'LG DVD Player with USBs Direct Recording (DP132)', 'price': 27.88, 'itemId': 333963490}]};
 
   let list = req.body || test;
+  console.log(req.session.passport);
   if (req.session.passport.user) {
     for (let key in list) {
       list[key].forEach((item) => {
@@ -376,7 +374,6 @@ exports.saveShopping = function(req, res, next) {
     });
   }
 };
-
 
 // next two function are used for nodemailer
 let smtTransport = nodemailer.createTransport({
@@ -460,7 +457,6 @@ let storeitemsInCache = (categoryid, res) => {
   }, 1000);
 };
 
-
 // it will items from cache(database);
 exports.cachedWishlist = (req, res) => {
   let categoryid = req.query.query;
@@ -476,11 +472,6 @@ exports.cachedWishlist = (req, res) => {
     }
   });
 };
-
-
-
-
-
 
 // it will notify if price for any product in User database has changed
 exports.updateProducts = (req, res) => {
@@ -513,6 +504,34 @@ exports.updateProducts = (req, res) => {
           });
         }
       });
+    }
+  });
+};
+
+//send wishlist to user Email
+exports.sendList = (req, res) => {
+  //var userEmail = req.session.passport.user;
+  console.log(req.session.passport);
+  var wishlist = 'hello';
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'beretsberet@gmail.com', // Your email id
+      pass: 'dummy123' // Your password
+    }
+  });
+  var mailOptions = {
+    to: 'lillianlee118@gmail.com',
+    subject: 'Hi from wishList! Here is your wishlist!',
+    text: 'Your wishlist: ' + wishlist
+  };
+  transporter.sendMail(mailOptions, function(error, response) {
+    if (error) {
+      console.log(error);
+      res.json({hi: 'error here'});
+    } else {
+      console.log('Email sent: ' + response.response);
+      res.json({response: response.response});
     }
   });
 };

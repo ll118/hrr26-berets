@@ -41,6 +41,8 @@ class ShoppingListEntry extends Component {
             <button className="btn btn-info button-name btn-xs" onClick={this.handleNewList}>New List</button>
             <button className="btn btn-success button-name btn-xs" onClick={this.props.saveList}>Save List</button>
             <button className="btn btn-danger button-name btn-xs" onClick={this.props.removeList}>Remove List</button>
+            <button className="btn btn-danger button-name btn-xs" onClick={this.props.handleSend}>Send To Myself</button>
+
           </div>
         </div>
         <div className="col-xs-12">
